@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.bikelong.mapper.RentalShopMapper">
+	
+	<select id="selectRentalShop" resultType="RentalShop">
+		SELECT rentalShopNo, rentalShopName, location, lat, lng, count
+		FROM RentalShop
+	</select>
+	
+	<select id="searchRentalShop" parameterType="hashmap" resultType="RentalShop">
+		SELECT rentalShopNo, rentalShopName, location, lat, lng, count
+		FROM RentalShop
+		WHERE
+		<if test='select == "지역"'>
+			location LIKE CONCAT('%', #{text}, '%')
+		</if>
+		<if test='select == "대여소명"'>
+			rentalShopName LIKE CONCAT('%', #{text}, '%')
+		</if>
+	</select>
+	
+	<select id="selectMobileRentalShop" resultType="RentalShop">
+		SELECT rentalShopNo, rentalShopName, location, lat, lng, count
+		FROM RentalShop
+	</select>
+	
+	<select id="selectMobileBike" resultType="Bike" parameterType="int">
+		SELECT B.bikeNo, B.rentalShopNo, B.state, R.rentalShopName
+		FROM Bike B
+		JOIN RentalShop R
+		ON B.rentalShopNo = R.rentalShopNo
+		WHERE B.rentalShopNo = #{rentalShopNo}
+	</select>
+	
+	<select id="selectMobileSearch" resultType="RentalShop" parameterType="String">
+		SELECT rentalShopNo, rentalShopName, location, lat, lng, count
+		FROM RentalShop
+		WHERE rentalShopName LIKE CONCAT('%', #{mSearch}, '%')
+	</select>
+
+	<update id="updateBike" parameterType="hashmap">
+		<if test="request == 0">
+    		UPDATE Bike SET state = 1, rentalShopNo = #{rentalShopNo}
+  		</if>
+  		<if test="request == 1">
+    		UPDATE Bike SET state = 0, rentalShopNo = #{rentalShopNo}
+  		</if>
+		WHERE bikeNo = #{bikeNo}
+	</update>
+	
+	<update id="updateRentalShop" parameterType="hashmap">
+		<if test="request == 0">
+    		UPDATE RentalShop SET count = count-1
+  		</if>
+  		<if test="request == 1">
+    		UPDATE RentalShop SET count = count+1
+  		</if>
+		WHERE RentalShopNo = #{rentalShopNo}
+	</update>
+
+</mapper>
+
+
+
+
+
+
+
+
